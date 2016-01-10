@@ -361,7 +361,7 @@ class many(object):
     def outline(self, inner, outer):
         return self.evaluator('outline', inner, outer)
 
-    def mask(self, dims=None, base=None, fill='pink', stroke=None):
+    def mask(self, dims=None, base=None, fill='deeppink', stroke=None):
         """
         Create a mask image with colored regions.
 
@@ -380,8 +380,6 @@ class many(object):
         stroke : str or array-like, optional, default = None
             String color specifier, or RGB values
         """
-        from matplotlib import colors
-
         if dims is None and base is None:
             mins = asarray([b[0:2] for b in self.bbox])
             maxes = asarray([b[2:] for b in self.bbox])

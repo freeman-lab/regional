@@ -24,7 +24,8 @@ image(region.mask())
 
 constructs a single region 
 
-- `coords` : list of coordinates `[[x, y], [x, y], ...]`
+- `coords`
+	- list of coordinates `[[x, y], [x, y], ...]`
 
 ####`regions = many(list)`
 
