@@ -32,11 +32,9 @@ constructs a single region
 	- list of regions `[region, region, ...]` or 
 	- list of lists of coordinates `[[[x, y], [x, y], ...], [[x, y], [x, y], ...], ...]`
 
-### usage
-
 `one` region and `many` regions share a set of common attributes and methods, in the case of `many` regions they are just evaluated once per region
 
-#### attributes
+### attributes
 
 ####`region.hull`
 
@@ -50,7 +48,7 @@ rectangular bounding box
 
 euclidean center
 
-#### methods
+### methods
 
 ####`region.distance(other)`
 
