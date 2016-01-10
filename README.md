@@ -32,7 +32,7 @@ constructs a single region
 	- list of regions `[region, region, ...]` or 
 	- list of lists of coordinates `[[[x, y], [x, y], ...], [[x, y], [x, y], ...], ...]`
 
-`one` region and `many` regions share a set of common attributes and methods, in the case of `many` regions they are just evaluated once per region
+`one` region and `many` regions have the same attributes and methods, in the case of `many` regions they are just evaluated once per region
 
 ### attributes
 
