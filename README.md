@@ -28,9 +28,9 @@ constructs a single region
 
 ####`regions = many(list)`
 
-constructs a collection of regions
-
-- `list` : list of regions `[region, region, ...]` or list of lists of coordinates `[[[x, y], [x, y], ...], [[x, y], [x, y], ...], ...]`
+- `list` : 
+	- list of regions `[region, region, ...]` or 
+	- list of lists of coordinates `[[[x, y], [x, y], ...], [[x, y], [x, y], ...], ...]`
 
 ### usage
 
