@@ -1,8 +1,8 @@
-from numpy import asarray, amin, amax, sqrt, concatenate, mean, ndarray
+from numpy import asarray, amin, amax, sqrt, concatenate, mean, ndarray, sum, all, ones, tile, expand_dims, zeros, where
 
 class one(object):
     
-    def __init__(self, coordinates, values=None, id=None):
+    def __init__(self, coordinates):
         self.coordinates = asarray(coordinates)
 
         if self.coordinates.ndim == 1 and len(self.coordinates) > 0:
@@ -66,12 +66,8 @@ class one(object):
         """
         Combine this region with other.
         """
-        self.coordinates = concatenate((self.coordinates, other.coordinates))
-
-        if hasattr(self, 'values'):
-            self.values = concatenate((self.values, other.values))
-
-        return self
+        new = concatenate((self.coordinates, other.coordinates))
+        return one(new)
 
     def crop(self, min, max):
         """
@@ -87,8 +83,8 @@ class one(object):
         max : tuple
             Maximum or ending bounds for each axis.
         """
-        self.coordinates =  [c for c in coords if all(c >= minBound) and all(c < maxBound)]
-        return self
+        new = [c for c in self.coordinates if all(c >= min) and all(c < max)]
+        return one(new)
 
     def inbounds(self, min, max):
         """
@@ -126,8 +122,8 @@ class one(object):
         """
         checkist.opts(method, ['fraction', 'rates'])
 
-        coords_self = aslist(self.coordinates)
-        coords_other = aslist(other.coordinates)
+        coords_self = self.coordinates.tolist()
+        coords_other = other.coordinates.tolist()
 
         intersection = [a for a in coords_self if a in coords_other]
         nhit = float(len(intersection))
@@ -162,11 +158,12 @@ class one(object):
             coords = (coords - self.bbox[0:len(self.center)] + size)
             m[coords.T.tolist()] = 1
             m = binary_dilation(m, ones((size, size)))
-            newcoords = asarray(where(m)).T + self.bbox[0:len(self.center)] - size
-            newcoords = [c for c in newcoords if all(c >= 0)]
-            self.coordinates = newcoords
+            new = asarray(where(m)).T + self.bbox[0:len(self.center)] - size
+            new = [c for c in new if all(c >= 0)]
+        else:
+            return self
         
-        return self
+        return one(new)
 
     def exclude(self, other):
         """
@@ -184,14 +181,14 @@ class one(object):
         if isinstance(other, ndarray):
             coords_other = asarray(where(other)).T
         else:
-            coords_other = aslist(other.coordinates)
+            coords_other = other.coordinates.tolist()
 
-        coords_self = aslist(self.coordinates)
+        coords_self = self.coordinates.tolist()
 
         complement = [a for a in coords_self if a not in coords_other]
-        self.coordinates = complement
+        new = complement
 
-        return self
+        return one(new)
 
     def outline(self, inner, outer):
         """
@@ -206,6 +203,64 @@ class one(object):
             Size of outer outline boundary (in pixels)
         """
         return self.dilate(outer).exclude(self.dilate(inner))
+
+    def mask(self, dims=None, base=None, fill='pink', stroke=None):
+        """
+        Create a mask image with colored regions.
+
+        Parameters
+        ----------
+        dims : tuple, optional, default = None
+            Dimensions of embedding image,
+            will be ignored if background image is provided.
+
+        base : array-like, optional, default = None
+            Array to use as base background image.
+
+        fill : str or array-like, optional, default = 'pink'
+            String color specifier, or RGB values
+
+        stroke : str or array-like, optional, default = None
+            String color specifier, or RGB values
+        """
+        from matplotlib import colors
+
+        if dims is None and base is None:
+            extent = self.bbox[len(self.center):] - self.bbox[0:len(self.center)] + 1
+            base = ones(tuple(extent) + (3,))
+            coords = (self.coordinates - self.bbox[0:len(self.center)])
+        
+        elif dims is not None and base is None:
+            base = ones(tuple(dims) + (3,))
+            coords = self.coordinates
+
+        elif base is not None:
+            base = asarray(base)
+            if base.ndim < 3:
+                base = tile(expand_dims(base,2),[1,1,3])
+            coords = self.coordinates
+
+        if isinstance(fill, str):
+            fill = colors.hex2color(colors.cnames[fill])
+
+        if isinstance(stroke, str):
+            stroke = colors.hex2color(colors.cnames[stroke])
+
+        for channel in range(3):
+            inds = asarray([[c[0], c[1], channel] for c in coords])
+            base[inds.T.tolist()] = fill[channel]
+
+        if stroke is not None:
+            mn = [0, 0]
+            mx = [base.shape[0], base.shape[1]]
+            edge = self.outline(0,1).coordinates
+            edge = [e for e in edge if all(e >= mn) and all(e < mx)]
+            if len(edge) > 0:
+                for channel in range(3):
+                    inds = asarray([[c[0], c[1], channel] for c in edge])
+                    base[inds.T.tolist()] = stroke[channel]
+
+        return base
 
     def __repr__(self):
         s = 'region'
@@ -240,11 +295,14 @@ class many(object):
     def combiner(self, prop):
         return [getattr(r, prop) for r in self.regions]
 
-    def evaluator(self, prop):
-        return [getattr(r, prop) for r in self.regions]
+    def evaluator(self, func, *args, **kwargs):
+        return [getattr(r, func)(*args, **kwargs) for r in self.regions]
 
     @property
     def center(self):
+        """
+        Region center computed with a mean.
+        """
         return self.combiner('center')
 
     @property
@@ -253,10 +311,23 @@ class many(object):
 
     @property
     def hull(self):
+        """
+        Bounding convex hull as a polygon.
+        """
         return self.combiner('hull')
 
     @property
+    def bbox(self):
+        """
+        Bounding box as minimum and maximum coordinates.
+        """
+        return self.combiner('bbox')
+    
+    @property
     def area(self):
+        """
+        Region area as number of pixels.
+        """
         return self.combiner('area')
 
     @property
@@ -266,10 +337,77 @@ class many(object):
         """
         return len(self.regions)
 
-    
-    
+    def distance(self, other):
+        return self.evaluator('distance', other)
+
+    def merge(self, other):
+        return self.evaluator('merge', other)
+
+    def exclude(self, other):
+        return self.evaluator('exclude', other)
+
+    def overlap(self, other, method):
+        return self.evaluator('overlap', other, method)
+
+    def crop(self, min, max):
+        return self.evaluator('overlap', min, max)
+
+    def inbounds(self, min, max):
+        return self.evaluator('inbounds', min, max)
+
+    def dilate(self, size):
+        return self.evaluator('dilate', size)
+
+    def outline(self, inner, outer):
+        return self.evaluator('outline', inner, outer)
+
+    def mask(self, dims=None, base=None, fill='pink', stroke=None):
+        """
+        Create a mask image with colored regions.
+
+        Parameters
+        ----------
+        dims : tuple, optional, default = None
+            Dimensions of embedding image,
+            will be ignored if background image is provided.
+
+        base : array-like, optional, default = None
+            Array to use as base background image.
+
+        fill : str or array-like, optional, default = 'pink'
+            String color specifier, or RGB values
+
+        stroke : str or array-like, optional, default = None
+            String color specifier, or RGB values
+        """
+        from matplotlib import colors
+
+        if dims is None and base is None:
+            mins = asarray([b[0:2] for b in self.bbox])
+            maxes = asarray([b[2:] for b in self.bbox])
+            extent = maxes.max(axis=0) - mins.min(axis=0) + 1
+            base = ones(tuple(extent) + (3,))
+        
+        elif dims is not None and base is None:
+            base = ones(tuple(dims) + (3,))
+
+        elif base is not None:
+            base = asarray(base)
+            if base.ndim < 3:
+                base = tile(expand_dims(base,2),[1,1,3])
+
+        for r in self.regions:
+            base = r.mask(base=base, fill=fill, stroke=stroke)
+
+        return base
+
     def __repr__(self):
         s = 'regions'
         s += '\ncount: %g' % self.count
         return s
     
+keys = ['distance', 'merge', 'exclude', 'overlap', 'crop',
+        'inbounds', 'dilate', 'outline']
+        
+for k in keys:
+    many.__dict__[k].__doc__ = one.__dict__[k].__doc__
