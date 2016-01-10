@@ -1,6 +1,6 @@
 # regional
 
-simple manipulation and display of spatial regions in python
+simple manipulation and display of one or many spatial regions in python
 
 ### install
 
@@ -18,41 +18,68 @@ region = one([[0, 0], [0, 1], [1, 1], [1, 0]])
 image(region.mask())
 ```
 
-### usage
+### construction
 
 ####`region = one(coords)`
 
 constructs a single region 
 
-- `coords` : list of coordinates in the form `[[x, y], [x, y], ...]`
+- `coords` : list of coordinates `[[x, y], [x, y], ...]`
+
+####`regions = many(list)`
+
+constructs a collection of regions
+
+- `list` : list of regions `[region, region, ...]` or list of lists of coordinates `[[[x, y], [x, y], ...], [[x, y], [x, y], ...], ...]`
+
+### usage
+
+`one` region and `many` regions share a set of common attributes and methods, in the case of `many` regions they are just evaluated once per region
 
 #### attributes
 
-####`region.polygon()`
+####`region.hull`
 
-####`region.center()`
+convex hull
 
-####`region.bbox()`
+####`region.bbox`
+
+rectangular bounding box
+
+####`region.center`
+
+euclidean center
 
 #### methods
 
 ####`region.distance(other)`
 
+distance to other region
+
 ####`region.merge(other)`
+
+merge with other region
 
 ####`region.exclude(other)`
 
+exclude other region
+
 ####`region.overlap(other, method)`
+
+overlap with other region
 
 ####`region.crop(min, max)`
 
+crop region to bounds
+
+####`region.inbounds(min, max)`
+
+check whether region falls completely within bounds
+
 ####`region.dilate(size)`
+
+dilate region 
 
 ####`region.outline(inner, outer)`
 
-####`territory = many(coords)`
-
-constructs a collection of regions
-
-- `coords` : a list of regions, or a list of lists of coordinates in the form `[[[x, y], [x, y], ...], [[x, y], [x, y], ...], ...]`
-
+compute region outline
