@@ -204,7 +204,7 @@ class one(object):
         """
         return self.dilate(outer).exclude(self.dilate(inner))
 
-    def mask(self, dims=None, base=None, fill='pink', stroke=None):
+    def mask(self, dims=None, base=None, fill='deeppink', stroke=None):
         """
         Create a mask image with colored regions.
 

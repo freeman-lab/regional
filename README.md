@@ -81,3 +81,7 @@ dilate region
 ####`region.outline(inner, outer)`
 
 compute region outline
+
+####`region.mask(dims, base, fill, stroke)`
+
+generate image with regions as colored masks
