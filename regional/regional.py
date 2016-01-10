@@ -1,4 +1,5 @@
-from numpy import asarray, amin, amax, sqrt, concatenate, mean, ndarray, sum, all, ones, tile, expand_dims, zeros, where
+from numpy import asarray, amin, amax, sqrt, concatenate, mean, ndarray, sum, all, \
+    ones, tile, expand_dims, zeros, where
 
 class one(object):
     
