@@ -104,3 +104,30 @@ def test_outline():
 	assert allclose(r.coordinates, [[0, 0], [0, 1], [0, 2], 
 		[1, 0], [1, 2], [2, 0], [2, 1], [2, 2]])
 
+
+def test_mask():
+	coords = [[1, 1]]
+	r = one(coords)
+	im = r.mask(fill='red')
+	assert im.shape == (1, 1, 3)
+	assert allclose(im, [[[1, 0, 0]]])
+
+
+def test_mask_colors():
+	coords = [[1, 1]]
+	r = one(coords)
+	im = r.mask(fill='blue', dims=(2, 2))
+	assert im.shape == (2, 2, 3)
+	assert allclose(im[:, :, 0], [[1, 1], [1, 0]])
+	assert allclose(im[:, :, 1], [[1, 1], [1, 0]])
+	assert allclose(im[:, :, 2], [[1, 1], [1, 1]])
+	im = r.mask(fill='red', stroke='black', dims=(2, 2))
+	assert im.shape == (2, 2, 3)
+	assert allclose(im[:, :, 0], [[0, 0], [0, 1]])
+	assert allclose(im[:, :, 1], [[0, 0], [0, 0]])
+	assert allclose(im[:, :, 2], [[0, 0], [0, 0]])
+	im = r.mask(fill='red', background='blue', dims=(2, 2))
+	assert im.shape == (2, 2, 3)
+	assert allclose(im[:, :, 0], [[0, 0], [0, 1]])
+	assert allclose(im[:, :, 1], [[0, 0], [0, 0]])
+	assert allclose(im[:, :, 2], [[1, 1], [1, 0]])

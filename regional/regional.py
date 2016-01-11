@@ -1,5 +1,5 @@
-from numpy import asarray, amin, amax, sqrt, concatenate, mean, ndarray, sum, all, \
-    ones, tile, expand_dims, zeros, where
+from numpy import asarray, amin, amax, sqrt, concatenate, \
+    mean, ndarray, sum, all, ones, tile, expand_dims, zeros, where
 import checkist
 
 class one(object):
@@ -160,16 +160,13 @@ class one(object):
         """
         if size > 0:
             from skimage.morphology import binary_dilation
-
             size = (size * 2) + 1
             coords = self.coordinates
-            extent = self.bbox[len(self.center):] - self.bbox[0:len(self.center)]
-            extent += 1 + size * 2
-            m = zeros(extent)
+            tmp = zeros(self.extent + size * 2)
             coords = (coords - self.bbox[0:len(self.center)] + size)
-            m[coords.T.tolist()] = 1
-            m = binary_dilation(m, ones((size, size)))
-            new = asarray(where(m)).T + self.bbox[0:len(self.center)] - size
+            tmp[coords.T.tolist()] = 1
+            tmp = binary_dilation(tmp, ones((size, size)))
+            new = asarray(where(tmp)).T + self.bbox[0:len(self.center)] - size
             new = [c for c in new if all(c >= 0)]
         else:
             return self
@@ -215,7 +212,7 @@ class one(object):
         """
         return self.dilate(outer).exclude(self.dilate(inner))
 
-    def mask(self, dims=None, base=None, fill='deeppink', stroke=None):
+    def mask(self, dims=None, base=None, fill='deeppink', stroke=None, background=None):
         """
         Create a mask image with colored regions.
 
@@ -225,53 +222,38 @@ class one(object):
             Dimensions of embedding image,
             will be ignored if background image is provided.
 
-        base : array-like or str, optional, default = None
-            Background, can provide a string color specifier, 
-            RGB values, or a 2d or 3d array.
+        base : array-like, optional, default = None
+            Base image, can provide a 2d or 3d array, 
+            if unspecified will be white.
 
         fill : str or array-like, optional, default = 'pink'
-            String color specifier, or RGB values
+            String color specifier, or RGB value
 
         stroke : str or array-like, optional, default = None
-            String color specifier, or RGB values
+            String color specifier, or RGB value
+
+        background : str or array-like, optional, default = None
+            String color specifier, or RGB value
         """
-        from matplotlib import colors
+        fill = getcolor(fill)
+        stroke = getcolor(stroke)
+        background = getcolor(background)
 
-        fill = color2array(fill)
-        stroke = color2array(stroke)
-        base = color2array(base)
-
-        if dims is None or (base is not None and asarray(base).shape == (3,)):
-            extent = self.bbox[len(self.center):] - self.bbox[0:len(self.center)] + 1
-            offset = self.bbox[0:len(self.center)]
+        if dims is None and base is None:
+            region = one(self.coordinates - self.bbox[0:2])
         else:
-            extent = dims
-            offset = [0, 0]
+            region = self
 
-        if base is None:
-            base = ones(tuple(extent) + (3,))
-            
-        else:
-            base = asarray(base)
-            if base.shape == (3,):
-                m = zeros(tuple(extent) + (3,))
-                for channel in range(3):
-                    m[:,:,channel] = base[channel]
-                base = m
-            elif base.ndim < 3:
-                base = tile(expand_dims(base,2),[1,1,3])
-                offset = [0, 0]
-            else:
-                offset = [0, 0]
+        base = getbase(base=base, dims=dims, extent=self.extent, background=background)
 
         for channel in range(3):
-            inds = asarray([[c[0], c[1], channel] for c in self.coordinates - offset])
+            inds = asarray([[c[0], c[1], channel] for c in region.coordinates])
             base[inds.T.tolist()] = fill[channel]
 
         if stroke is not None:
             mn = [0, 0]
             mx = [base.shape[0], base.shape[1]]
-            edge = self.outline(0, 1).coordinates - offset
+            edge = region.outline(0, 1).coordinates
             edge = [e for e in edge if all(e >= mn) and all(e < mx)]
             if len(edge) > 0:
                 for channel in range(3):
@@ -343,6 +325,13 @@ class many(object):
         Bounding box as minimum and maximum coordinates.
         """
         return self.combiner('bbox')
+
+    @property
+    def extent(self):
+        """
+        Total region extent.
+        """
+        return self.combiner('extent')
     
     @property
     def area(self):
@@ -382,7 +371,7 @@ class many(object):
     def outline(self, inner, outer):
         return self.updater('outline', inner, outer)
 
-    def mask(self, dims=None, base=None, fill='deeppink', stroke=None):
+    def mask(self, dims=None, base=None, fill='deeppink', stroke=None, background=None):
         """
         Create a mask image with colored regions.
 
@@ -393,38 +382,31 @@ class many(object):
             will be ignored if background image is provided.
 
         base : array-like, optional, default = None
-            Array to use as base background image.
+            Array to use as base image, can be 2d (BW) or 3d (RGB).
 
         fill : str or array-like, optional, default = 'pink'
-            String color specifier, or RGB values
+            String color specifier, or RGB values.
 
         stroke : str or array-like, optional, default = None
-            String color specifier, or RGB values
+            String color specifier, or RGB values.
+
+        background : str or array-like, optional, default = None
+            String color specifier, or RGB values.
         """
-        from matplotlib import colors
+        background = getcolor(background)
 
-        base = color2array(base)
+        minbound = asarray([b[0:2] for b in self.bbox]).min(axis=0)
+        maxbound = asarray([b[2:] for b in self.bbox]).max(axis=0)
+        extent = maxbound - minbound + 1
 
-        if dims is None or (base is not None and not asarray(base).shape == (3,)):
-            mins = asarray([b[0:2] for b in self.bbox])
-            maxes = asarray([b[2:] for b in self.bbox])
-            extent = maxes.max(axis=0) - mins.min(axis=0) + 1
+        if dims is None and base is None:
+            regions = [one(r.coordinates - minbound) for r in self.regions]
         else:
-            extent = dims
+            regions = self.regions
 
-        if base is None:
-            base = ones(tuple(extent) + (3,))
-        else:
-            base = asarray(base)
-            if base.shape == (3,):
-                m = zeros(tuple(extent) + (3,))
-                for channel in range(3):
-                    m[:,:,channel] = base[channel]
-                base = m
-            elif base.ndim < 3:
-                base = tile(expand_dims(base,2),[1,1,3])
+        base = getbase(base=base, dims=dims, extent=extent, background=background)
 
-        for r in self.regions:
+        for r in regions:
             base = r.mask(base=base, fill=fill, stroke=stroke)
 
         return base
@@ -440,10 +422,34 @@ keys = ['distance', 'merge', 'exclude', 'overlap', 'crop',
 for k in keys:
     many.__dict__[k].__doc__ = one.__dict__[k].__doc__
 
-def color2array(name):
+def getcolor(name):
+    """
+    Turn optional color string into an array.
+    """
     if isinstance(name, str):
         from matplotlib import colors
         return asarray(colors.hex2color(colors.cnames[name]))
     else:
         return name
 
+def getbase(base=None, dims=None, extent=None, background=None):
+    """
+    Construct a base array from optional arguments.
+    """
+    if dims is not None:
+        extent = dims
+
+    if base is None and background is None:
+        return ones(tuple(extent) + (3,))
+
+    elif base is None and background is not None:
+        base = zeros(tuple(extent) + (3,))
+        for channel in range(3):
+            base[:, :, channel] = background[channel]
+        return base
+
+    elif base is not None and base.ndim < 3:
+        return tile(expand_dims(base, 2),[1, 1, 3])
+
+    else:
+        return base
