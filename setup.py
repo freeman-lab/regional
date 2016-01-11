@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 from setuptools import setup
-import regional
 
 version = '1.0.0'
 
