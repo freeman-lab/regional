@@ -124,7 +124,7 @@ class one(object):
 
         method : str
             Which estimate of overlap to compute, options are
-            'fraction' (symmetric) 'rates' (asymmetric) or 'correlation'
+            'fraction' (symmetric) or 'rates' (asymmetric)
         """
         checkist.opts(method, ['fraction', 'rates'])
 
@@ -184,17 +184,17 @@ class one(object):
         other : ndarray or one region
             Region to remove.
         """
-        if isinstance(other, ndarray):
-            coords_other = asarray(where(other)).T
+        if isinstance(other, list) or isinstance(other, ndarray):
+            other = asarray(other)
+            coords_other = asarray(where(other)).T.tolist()
         else:
             coords_other = other.coordinates.tolist()
 
         coords_self = self.coordinates.tolist()
 
         complement = [a for a in coords_self if a not in coords_other]
-        new = complement
 
-        return one(new)
+        return one(complement)
 
     def outline(self, inner, outer):
         """

@@ -5,6 +5,9 @@ def test_construction():
 	coords = [[0, 0], [0, 1], [1, 0], [1, 1]]
 	r = one(coords)
 	assert allclose(r.coordinates, coords)
+	coords = [1, 1]
+	r = one(coords)
+	assert allclose(r.coordinates, [coords])
 	
 
 def test_center():
@@ -63,11 +66,35 @@ def test_inbounds():
 
 def test_overlap():
 	coords = [[1, 1], [1, 2], [2, 1], [2, 2]]
-	other = one([[1, 1]])
-	v = one(coords).overlap(other, 'fraction')
+	v = one(coords).overlap(one([1, 1]), 'fraction')
 	assert v == 0.25
+	v = one(coords).overlap(one([[1, 1],[1, 2]]), 'fraction')
+	assert v == 0.5
+	v = one(coords).overlap(one([1, 1]), 'rates')
+	assert v == (0.25, 1.0)
+	v = one(coords).overlap(one([[1, 1], [1, 2], [3, 3], [4, 4]]), 'rates')
+	assert v == (0.5, 0.5)
 
 
+def test_dilate():
+	v = one([1, 1]).dilate(1)
+	assert allclose(v.coordinates, [[0, 0], [0, 1], [0, 2], [1, 0], 
+		[1, 1], [1, 2], [2, 0], [2, 1], [2, 2]])
+	v = one([1, 1]).dilate(0)
+	assert allclose(v.coordinates, [[1, 1]])
 
 
+def test_exclude():
+	coords = [[0, 0], [0, 1], [1, 0], [1, 1]]
+	r = one(coords).exclude(one([[0, 0], [0, 1]]))
+	assert allclose(r.coordinates, [[1, 0], [1, 1]])
+	r = one(coords).exclude([[0, 0], [0, 1]])
+	assert allclose(r.coordinates, [[0, 0], [0, 1], [1, 0]])
+
+
+def test_outline():
+	coords = [[1, 1]]
+	r = one(coords).outline(0, 1)
+	assert allclose(r.coordinates, [[0, 0], [0, 1], [0, 2], 
+		[1, 0], [1, 2], [2, 0], [2, 1], [2, 2]])
 
