@@ -44,7 +44,7 @@ constructs a single region
 
 ![many](pngs/many.png)
 
-see the included [notebook](example.ipynb) for more examples
+see the included [notebook](example.ipynb) for a complete example
 
 `one` region and `many` regions have the same attributes and methods, the only difference is that in the case of `many` regions they are just evaluated once per region
 
