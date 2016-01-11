@@ -104,8 +104,6 @@ class one(object):
         """
         mincheck = sum(self.coordinates >= min, axis=1) == 0
         maxcheck = sum(self.coordinates < max, axis=1) == 0
-        print(mincheck)
-        print(maxcheck)
         return True if (mincheck.sum() + maxcheck.sum()) == 0 else False
 
     def overlap(self, other, method='fraction'):
@@ -241,7 +239,7 @@ class one(object):
         if isinstance(base, str):
             base = asarray(colors.hex2color(colors.cnames[base]))
 
-        if dims is None or (base is not None and not asarray(base).shape == (3,)):
+        if dims is None or (base is not None and asarray(base).shape == (3,)):
             extent = self.bbox[len(self.center):] - self.bbox[0:len(self.center)] + 1
             offset = self.bbox[0:len(self.center)]
         else:
@@ -260,6 +258,9 @@ class one(object):
                 base = m
             elif base.ndim < 3:
                 base = tile(expand_dims(base,2),[1,1,3])
+                offset = [0, 0]
+            else:
+                offset = [0, 0]
 
         for channel in range(3):
             inds = asarray([[c[0], c[1], channel] for c in self.coordinates - offset])
@@ -398,18 +399,28 @@ class many(object):
         stroke : str or array-like, optional, default = None
             String color specifier, or RGB values
         """
-        if dims is None and base is None:
+        from matplotlib import colors
+
+        if isinstance(base, str):
+            base = asarray(colors.hex2color(colors.cnames[base]))
+
+        if dims is None or (base is not None and not asarray(base).shape == (3,)):
             mins = asarray([b[0:2] for b in self.bbox])
             maxes = asarray([b[2:] for b in self.bbox])
             extent = maxes.max(axis=0) - mins.min(axis=0) + 1
-            base = ones(tuple(extent) + (3,))
-        
-        elif dims is not None and base is None:
-            base = ones(tuple(dims) + (3,))
+        else:
+            extent = dims
 
-        elif base is not None:
+        if base is None:
+            base = ones(tuple(extent) + (3,))
+        else:
             base = asarray(base)
-            if base.ndim < 3:
+            if base.shape == (3,):
+                m = zeros(tuple(extent) + (3,))
+                for channel in range(3):
+                    m[:,:,channel] = base[channel]
+                base = m
+            elif base.ndim < 3:
                 base = tile(expand_dims(base,2),[1,1,3])
 
         for r in self.regions:
