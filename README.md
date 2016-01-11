@@ -3,7 +3,7 @@
 [![Latest Version](https://img.shields.io/pypi/v/regional.svg)](https://pypi.python.org/pypi/regional)
 [![Build Status](https://img.shields.io/travis/freeman-lab/regional/master.svg)](https://travis-ci.org/freeman-lab/regional) 
 
-manipulation and display of spatial regions in python, useful when working with geometries, maps, feature extraction, or other spatial, small and light-weight, built on `numpy` and `scipy`, and designed to be composed with other modules
+manipulation and display of spatial regions in python, useful when working with geometries, maps, feature extraction, or other spatial analysis, small and light-weight, built on `numpy` and `scipy`, and designed to be composed with other modules
 
 ### install
 
