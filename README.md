@@ -30,7 +30,9 @@ constructs a single region
 
 ![many](pngs/many.png)
 
-`one` region and `many` regions have the same attributes and methods, in the case of `many` regions they are just evaluated once per region
+see the included [notebook](example.ipynb) for more examples
+
+`one` region and `many` regions have the same attributes and methods, the only difference is that in the case of `many` regions they are just evaluated once per region
 
 ### attributes
 
