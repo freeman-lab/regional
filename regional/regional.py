@@ -159,7 +159,7 @@ class one(object):
             Size of dilation in pixels
         """
         if size > 0:
-            from skimage.morphology import binary_dilation
+            from scipy.ndimage.morphology import binary_dilation
             size = (size * 2) + 1
             coords = self.coordinates
             tmp = zeros(self.extent + size * 2)
