@@ -50,6 +50,13 @@ class one(object):
         """
         return len(self.coordinates)
 
+    @property
+    def extent(self):
+        """
+        Total region extent.
+        """
+        return self.bbox[2:] - self.bbox[0:2] + 1
+    
     def distance(self, other):
         """
         Distance between the center of this region and another.

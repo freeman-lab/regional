@@ -28,6 +28,12 @@ def test_bbox():
 	assert allclose(r.bbox, [0, 0, 2, 2])
 
 
+def test_extent():
+	coords = [[0, 0], [0, 2], [2, 0], [1, 1], [2, 2]]
+	r = one(coords)
+	assert allclose(r.extent, [3, 3])
+
+
 def test_area():
 	coords = [[0, 0], [0, 2], [2, 0], [2, 2]]
 	r = one(coords)

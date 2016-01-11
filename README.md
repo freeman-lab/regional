@@ -49,6 +49,10 @@ rectangular bounding box
 
 euclidean center
 
+####`region.extent`
+
+total region extent
+
 ### methods
 
 ####`region.distance(other)`
