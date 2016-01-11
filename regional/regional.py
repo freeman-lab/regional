@@ -220,8 +220,9 @@ class one(object):
             Dimensions of embedding image,
             will be ignored if background image is provided.
 
-        base : array-like, optional, default = None
-            Array to use as base background image.
+        base : array-like or str, optional, default = None
+            Background, can provide a string color specifier, 
+            RGB values, or a 2d or 3d array.
 
         fill : str or array-like, optional, default = 'pink'
             String color specifier, or RGB values
@@ -231,35 +232,43 @@ class one(object):
         """
         from matplotlib import colors
 
-        if dims is None and base is None:
-            extent = self.bbox[len(self.center):] - self.bbox[0:len(self.center)] + 1
-            base = ones(tuple(extent) + (3,))
-            coords = (self.coordinates - self.bbox[0:len(self.center)])
-        
-        elif dims is not None and base is None:
-            base = ones(tuple(dims) + (3,))
-            coords = self.coordinates
-
-        elif base is not None:
-            base = asarray(base)
-            if base.ndim < 3:
-                base = tile(expand_dims(base,2),[1,1,3])
-            coords = self.coordinates
-
         if isinstance(fill, str):
-            fill = colors.hex2color(colors.cnames[fill])
+            fill = asarray(colors.hex2color(colors.cnames[fill]))
 
         if isinstance(stroke, str):
-            stroke = colors.hex2color(colors.cnames[stroke])
+            stroke = asarray(colors.hex2color(colors.cnames[stroke]))
+
+        if isinstance(base, str):
+            base = asarray(colors.hex2color(colors.cnames[base]))
+
+        if dims is None or (base is not None and not asarray(base).shape == (3,)):
+            extent = self.bbox[len(self.center):] - self.bbox[0:len(self.center)] + 1
+            offset = self.bbox[0:len(self.center)]
+        else:
+            extent = dims
+            offset = [0, 0]
+
+        if base is None:
+            base = ones(tuple(extent) + (3,))
+            
+        else:
+            base = asarray(base)
+            if base.shape == (3,):
+                m = zeros(tuple(extent) + (3,))
+                for channel in range(3):
+                    m[:,:,channel] = base[channel]
+                base = m
+            elif base.ndim < 3:
+                base = tile(expand_dims(base,2),[1,1,3])
 
         for channel in range(3):
-            inds = asarray([[c[0], c[1], channel] for c in coords])
+            inds = asarray([[c[0], c[1], channel] for c in self.coordinates - offset])
             base[inds.T.tolist()] = fill[channel]
 
         if stroke is not None:
             mn = [0, 0]
             mx = [base.shape[0], base.shape[1]]
-            edge = self.outline(0,1).coordinates
+            edge = self.outline(0, 1).coordinates - offset
             edge = [e for e in edge if all(e >= mn) and all(e < mx)]
             if len(edge) > 0:
                 for channel in range(3):
@@ -304,6 +313,9 @@ class many(object):
     def evaluator(self, func, *args, **kwargs):
         return [getattr(r, func)(*args, **kwargs) for r in self.regions]
 
+    def updater(self, func, *args, **kwargs):
+        return many([getattr(r, func)(*args, **kwargs) for r in self.regions])
+
     @property
     def center(self):
         """
@@ -346,26 +358,26 @@ class many(object):
     def distance(self, other):
         return self.evaluator('distance', other)
 
-    def merge(self, other):
-        return self.evaluator('merge', other)
-
-    def exclude(self, other):
-        return self.evaluator('exclude', other)
-
-    def overlap(self, other, method):
+    def overlap(self, other, method='fraction'):
         return self.evaluator('overlap', other, method)
-
-    def crop(self, min, max):
-        return self.evaluator('overlap', min, max)
 
     def inbounds(self, min, max):
         return self.evaluator('inbounds', min, max)
 
+    def merge(self, other):
+        return self.updater('merge', other)
+
+    def exclude(self, other):
+        return self.updater('exclude', other)
+
+    def crop(self, min, max):
+        return self.updater('crop', min, max)
+
     def dilate(self, size):
-        return self.evaluator('dilate', size)
+        return self.updater('dilate', size)
 
     def outline(self, inner, outer):
-        return self.evaluator('outline', inner, outer)
+        return self.updater('outline', inner, outer)
 
     def mask(self, dims=None, base=None, fill='deeppink', stroke=None):
         """

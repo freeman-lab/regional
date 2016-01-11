@@ -40,67 +40,54 @@ def test_area():
 	assert r.area == [4, 4]
 
 
-# def test_distance():
-# 	coords = [[0, 0], [0, 2], [2, 0], [2, 2]]
-# 	r = one(coords)
-# 	assert r.distance([1, 1]) == 0
+def test_distance():
+	coords = [[0, 0], [0, 2], [2, 0], [2, 2]]
+	r = many([coords, coords])
+	assert r.distance([1, 1]) == [0, 0]
 
 
-# def test_merge():
-# 	coords = [[0, 0], [0, 2], [2, 0], [2, 2]]
-# 	r = one(coords).merge([1, 1])
-# 	assert allclose(r.coordinates, coords + [[1,1]])
-# 	r = one(coords).merge(one([1, 1]))
-# 	assert allclose(r.coordinates, coords + [[1,1]])
+def test_merge():
+	coords = [[0, 0], [0, 2], [2, 0], [2, 2]]
+	truth = coords + [[1,1]]
+	r = many([coords, coords]).merge([1, 1])
+	assert allclose(r.coordinates, [truth, truth])
 
 
-# def test_crop():
-# 	coords = [[0, 0], [0, 2], [2, 0], [2, 2]]
-# 	r = one(coords).crop([0, 0], [1, 1])
-# 	assert allclose(r.coordinates, [[0, 0]])
+def test_crop():
+	coords = [[0, 0], [0, 2], [2, 0], [2, 2]]
+	truth = [[0, 0]]
+	r = many([coords, coords]).crop([0, 0], [1, 1])
+	assert allclose(r.coordinates, [truth, truth])
 
 
-# def test_inbounds():
-# 	coords = [[1, 1], [1, 2], [2, 1], [2, 2]]
-# 	v = one(coords).inbounds([0, 0], [3, 3])
-# 	assert v == True
-# 	v = one(coords).inbounds([0, 0], [2, 2])
-# 	assert v == False
-# 	v = one(coords).inbounds([1, 1], [3, 3])
-# 	assert v == True
+def test_inbounds():
+	coords = [[1, 1], [1, 2], [2, 1], [2, 2]]
+	v = many([coords, coords]).inbounds([0, 0], [3, 3])
+	assert v == [True, True]
 
 
-# def test_overlap():
-# 	coords = [[1, 1], [1, 2], [2, 1], [2, 2]]
-# 	v = one(coords).overlap(one([1, 1]), 'fraction')
-# 	assert v == 0.25
-# 	v = one(coords).overlap(one([[1, 1],[1, 2]]), 'fraction')
-# 	assert v == 0.5
-# 	v = one(coords).overlap(one([1, 1]), 'rates')
-# 	assert v == (0.25, 1.0)
-# 	v = one(coords).overlap(one([[1, 1], [1, 2], [3, 3], [4, 4]]), 'rates')
-# 	assert v == (0.5, 0.5)
+def test_overlap():
+	coords = [[1, 1], [1, 2], [2, 1], [2, 2]]
+	v = many([coords, coords]).overlap(one([1, 1]))
+	assert v == [0.25, 0.25]
 
 
-# def test_dilate():
-# 	v = one([1, 1]).dilate(1)
-# 	assert allclose(v.coordinates, [[0, 0], [0, 1], [0, 2], [1, 0], 
-# 		[1, 1], [1, 2], [2, 0], [2, 1], [2, 2]])
-# 	v = one([1, 1]).dilate(0)
-# 	assert allclose(v.coordinates, [[1, 1]])
+def test_dilate():
+	v = many([one([1, 1]), one([1, 1])]).dilate(1)
+	truth = [[0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2], [2, 0], [2, 1], [2, 2]]
+	assert allclose(v.coordinates, [truth, truth])
 
 
-# def test_exclude():
-# 	coords = [[0, 0], [0, 1], [1, 0], [1, 1]]
-# 	r = one(coords).exclude(one([[0, 0], [0, 1]]))
-# 	assert allclose(r.coordinates, [[1, 0], [1, 1]])
-# 	r = one(coords).exclude([[0, 0], [0, 1]])
-# 	assert allclose(r.coordinates, [[0, 0], [0, 1], [1, 0]])
+def test_exclude():
+	coords = [[0, 0], [0, 1], [1, 0], [1, 1]]
+	truth = [[1, 0], [1, 1]]
+	r = many([coords, coords]).exclude(one([[0, 0], [0, 1]]))
+	assert allclose(r.coordinates, [truth, truth])
 
 
-# def test_outline():
-# 	coords = [[1, 1]]
-# 	r = one(coords).outline(0, 1)
-# 	assert allclose(r.coordinates, [[0, 0], [0, 1], [0, 2], 
-# 		[1, 0], [1, 2], [2, 0], [2, 1], [2, 2]])
+def test_outline():
+	coords = [[1, 1]]
+	truth = [[0, 0], [0, 1], [0, 2], [1, 0], [1, 2], [2, 0], [2, 1], [2, 2]]
+	r = many([coords, coords]).outline(0, 1)
+	assert allclose(r.coordinates, [truth, truth])
 
