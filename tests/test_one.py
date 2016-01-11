@@ -111,6 +111,9 @@ def test_mask():
 	im = r.mask(fill='red')
 	assert im.shape == (1, 1, 3)
 	assert allclose(im, [[[1, 0, 0]]])
+	im = r.mask(fill=[1, 0, 0])
+	assert im.shape == (1, 1, 3)
+	assert allclose(im, [[[1, 0, 0]]])
 
 
 def test_mask_colors():

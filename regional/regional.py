@@ -385,15 +385,19 @@ class many(object):
             Array to use as base image, can be 2d (BW) or 3d (RGB).
 
         fill : str or array-like, optional, default = 'pink'
-            String color specifier, or RGB values.
+            String color specifier, or RGB values,
+            or a list of either.
 
         stroke : str or array-like, optional, default = None
-            String color specifier, or RGB values.
+            String color specifier, or RGB values,
+            or a list of either.
 
         background : str or array-like, optional, default = None
             String color specifier, or RGB values.
         """
         background = getcolor(background)
+        fill = getcolors(fill, self.count)
+        stroke = getcolors(stroke, self.count)
 
         minbound = asarray([b[0:2] for b in self.bbox]).min(axis=0)
         maxbound = asarray([b[2:] for b in self.bbox]).max(axis=0)
@@ -406,8 +410,10 @@ class many(object):
 
         base = getbase(base=base, dims=dims, extent=extent, background=background)
 
-        for r in regions:
-            base = r.mask(base=base, fill=fill, stroke=stroke)
+        for i, r in enumerate(regions):
+            f = fill[i] if fill else None
+            s = stroke[i] if stroke else None
+            base = r.mask(base=base, fill=f, stroke=s)
 
         return base
 
@@ -422,15 +428,28 @@ keys = ['distance', 'merge', 'exclude', 'overlap', 'crop',
 for k in keys:
     many.__dict__[k].__doc__ = one.__dict__[k].__doc__
 
-def getcolor(name):
+def getcolor(spec):
     """
-    Turn optional color string into an array.
+    Turn optional color string spec into an array.
     """
-    if isinstance(name, str):
+    if isinstance(spec, str):
         from matplotlib import colors
-        return asarray(colors.hex2color(colors.cnames[name]))
+        return asarray(colors.hex2color(colors.cnames[spec]))
     else:
-        return name
+        return spec
+
+def getcolors(spec, n):
+    """
+    Turn list of color specs into list of arrays.
+    """
+    if isinstance(spec, str):
+        return [getcolor(spec) for i in range(n)]
+    elif isinstance(spec, list) and isinstance(spec[0], str):
+        return [getcolor(s) for s in spec]
+    elif (isinstance(spec, list) or isinstance(spec, ndarray)) and asarray(spec).shape == (3,):
+        return [spec for i in range(n)]
+    else:
+        return spec
 
 def getbase(base=None, dims=None, extent=None, background=None):
     """
@@ -438,18 +457,14 @@ def getbase(base=None, dims=None, extent=None, background=None):
     """
     if dims is not None:
         extent = dims
-
     if base is None and background is None:
         return ones(tuple(extent) + (3,))
-
     elif base is None and background is not None:
         base = zeros(tuple(extent) + (3,))
         for channel in range(3):
             base[:, :, channel] = background[channel]
         return base
-
     elif base is not None and base.ndim < 3:
         return tile(expand_dims(base, 2),[1, 1, 3])
-
     else:
         return base
