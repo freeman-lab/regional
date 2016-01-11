@@ -1,5 +1,6 @@
 from numpy import asarray, amin, amax, sqrt, concatenate, mean, ndarray, sum, all, \
     ones, tile, expand_dims, zeros, where
+import checkist
 
 class one(object):
     
@@ -67,6 +68,8 @@ class one(object):
         """
         Combine this region with other.
         """
+        if not isinstance(other, one):
+            other = one(other)
         new = concatenate((self.coordinates, other.coordinates))
         return one(new)
 
@@ -99,9 +102,11 @@ class one(object):
         max : tuple
             Maximum bound to check for each axis.
         """
-        mincheck = sum(self.coordinates < min, axis=1) == 0
-        maxcheck = sum(self.coordinates > max, axis=1) == 0
-        return True if (mincheck + maxcheck) == 0 else False
+        mincheck = sum(self.coordinates >= min, axis=1) == 0
+        maxcheck = sum(self.coordinates < max, axis=1) == 0
+        print(mincheck)
+        print(maxcheck)
+        return True if (mincheck.sum() + maxcheck.sum()) == 0 else False
 
     def overlap(self, other, method='fraction'):
         """
@@ -278,13 +283,13 @@ class many(object):
             self.regions = [regions]
         elif isinstance(regions, list) and isinstance(regions[0], one):
             self.regions = regions
-        elif isinstance(sources, list):
+        elif isinstance(regions, list):
             self.regions = []
             for r in regions:
                 self.regions.append(one(r))
         else:
             raise Exception("Input type not recognized, must be region, list of regions, "
-                            "or list of coordinates, got %s" % type(sources))
+                            "or list of coordinates, got %s" % type(regions))
 
     def __getitem__(self, selection):
         if isinstance(selection, int):
