@@ -11,20 +11,7 @@ simple manipulation and display of spatial regions in python
 pip install regional
 ```
 
-### example
-
-```python
-from regional import one
-
-region = one([[0, 0], [0, 1], [1, 1], [1, 0]])
-
-region.center
->> [0.5, 0.5]
-region.bbox
->> [0, 0, 1, 1]
-```
-
-### construction
+### usage
 
 ####`region = one(coords)`
 
@@ -33,11 +20,15 @@ constructs a single region
 - `coords`
 	- list of coordinates `[[x, y], [x, y], ...]`
 
+[![one](pngs/one.png)]
+
 ####`regions = many(list)`
 
 - `list` : 
 	- list of regions `[region, region, ...]` or 
 	- list of lists of coordinates `[[[x, y], [x, y], ...], [[x, y], [x, y], ...], ...]`
+
+[![many](pngs/many.png)]
 
 `one` region and `many` regions have the same attributes and methods, in the case of `many` regions they are just evaluated once per region
 
