@@ -152,9 +152,9 @@ class one(object):
             Size of dilation in pixels
         """
         if size > 0:
-            size = (size * 2) + 1
             from skimage.morphology import binary_dilation
 
+            size = (size * 2) + 1
             coords = self.coordinates
             extent = self.bbox[len(self.center):] - self.bbox[0:len(self.center)]
             extent += 1 + size * 2
@@ -230,14 +230,9 @@ class one(object):
         """
         from matplotlib import colors
 
-        if isinstance(fill, str):
-            fill = asarray(colors.hex2color(colors.cnames[fill]))
-
-        if isinstance(stroke, str):
-            stroke = asarray(colors.hex2color(colors.cnames[stroke]))
-
-        if isinstance(base, str):
-            base = asarray(colors.hex2color(colors.cnames[base]))
+        fill = color2array(fill)
+        stroke = color2array(stroke)
+        base = color2array(base)
 
         if dims is None or (base is not None and asarray(base).shape == (3,)):
             extent = self.bbox[len(self.center):] - self.bbox[0:len(self.center)] + 1
@@ -401,8 +396,7 @@ class many(object):
         """
         from matplotlib import colors
 
-        if isinstance(base, str):
-            base = asarray(colors.hex2color(colors.cnames[base]))
+        base = color2array(base)
 
         if dims is None or (base is not None and not asarray(base).shape == (3,)):
             mins = asarray([b[0:2] for b in self.bbox])
@@ -438,3 +432,11 @@ keys = ['distance', 'merge', 'exclude', 'overlap', 'crop',
         
 for k in keys:
     many.__dict__[k].__doc__ = one.__dict__[k].__doc__
+
+def color2array(name):
+    if isinstance(name, str):
+        from matplotlib import colors
+        return asarray(colors.hex2color(colors.cnames[name]))
+    else:
+        return name
+
