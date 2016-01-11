@@ -46,7 +46,7 @@ constructs a single region
 
 ![many](pngs/many.png)
 
-`one` region and `many` regions have the same attributes and methods, the only difference is that in the case of `many` regions they are just evaluated once per region
+`one` region and `many` regions have the same [`attributes`](#attributes) and [`methods`](#methods), the only difference is that in the case of `many` regions they are just evaluated once per region
 
 ### attributes
 
