@@ -86,6 +86,6 @@ dilate region
 
 compute region outline
 
-####`region.mask(dims, base, fill, stroke, value, cmap)`
+####`region.mask(dims, base, fill, stroke, background, value, cmap)`
 
 generate image with regions as colored masks (`value` and `cmap` only for multiple regions)
