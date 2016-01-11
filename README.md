@@ -25,6 +25,8 @@ region.center
 >> [0.5, 0.5]
 ```
 
+see the included [notebook](example.ipynb) for a longer example
+
 ### usage
 
 ####`region = one(coords)`
@@ -43,8 +45,6 @@ constructs a single region
 	- list of lists of coordinates `[[[x, y], [x, y], ...], [[x, y], [x, y], ...], ...]`
 
 ![many](pngs/many.png)
-
-see the included [notebook](example.ipynb) for a complete example
 
 `one` region and `many` regions have the same attributes and methods, the only difference is that in the case of `many` regions they are just evaluated once per region
 
