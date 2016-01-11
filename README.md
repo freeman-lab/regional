@@ -11,6 +11,20 @@ manipulation and display of spatial regions in python, useful when working with 
 pip install regional
 ```
 
+### example
+
+```python
+from regional import one
+
+region = one([[0, 0], [0, 1], [1, 0], [1, 1]])
+
+region.bbox
+>> [0, 0, 1, 1]
+
+region.center
+>> [0.5, 0.5]
+```
+
 ### usage
 
 ####`region = one(coords)`
