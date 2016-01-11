@@ -82,7 +82,7 @@ exclude other region
 
 ####`region.overlap(other, method)`
 
-overlap with other region
+compute overlap with other region
 
 ####`region.crop(min, max)`
 
