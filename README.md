@@ -3,7 +3,7 @@
 [![Latest Version](https://img.shields.io/pypi/v/regional.svg)](https://pypi.python.org/pypi/regional)
 [![Build Status](https://img.shields.io/travis/freeman-lab/regional/master.svg)](https://travis-ci.org/freeman-lab/regional) 
 
-simple manipulation and display of one or many spatial regions in python
+simple manipulation and display of spatial regions in python
 
 ### install
 
@@ -13,12 +13,15 @@ pip install regional
 
 ### example
 
-```
+```python
 from regional import one
-from showit import image
 
 region = one([[0, 0], [0, 1], [1, 1], [1, 0]])
-image(region.mask())
+
+region.center
+>> [0.5, 0.5]
+region.bbox
+>> [0, 0, 1, 1]
 ```
 
 ### construction
