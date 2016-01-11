@@ -1,1 +1,6 @@
+numpy
+scipy
+scikit-image
+matplotlib
 checkist
+
