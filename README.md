@@ -1,5 +1,8 @@
 # regional
 
+[![Latest Version](https://img.shields.io/pypi/v/regional.svg)](https://pypi.python.org/pypi/regional)
+[![Build Status](https://img.shields.io/travis/freeman-lab/regional/master.svg)](https://travis-ci.org/freeman-lab/regional) 
+
 simple manipulation and display of one or many spatial regions in python
 
 ### install
