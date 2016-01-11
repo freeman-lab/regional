@@ -20,7 +20,7 @@ constructs a single region
 - `coords`
 	- list of coordinates `[[x, y], [x, y], ...]`
 
-[![one](pngs/one.png)]
+![one](pngs/one.png)
 
 ####`regions = many(list)`
 
@@ -28,7 +28,7 @@ constructs a single region
 	- list of regions `[region, region, ...]` or 
 	- list of lists of coordinates `[[[x, y], [x, y], ...], [[x, y], [x, y], ...], ...]`
 
-[![many](pngs/many.png)]
+![many](pngs/many.png)
 
 `one` region and `many` regions have the same attributes and methods, in the case of `many` regions they are just evaluated once per region
 
