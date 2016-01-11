@@ -134,4 +134,10 @@ def test_mask_colors():
 	assert allclose(im[:,:,2], [[0, 0], [0, 1]])
 
 
+def test_mask_colormap():
+	r = many([one([0, 0]), one([1, 1])])
+	im = r.mask(cmap='gray', value=[0, 1], background='red')
+	assert allclose(im[:,:,0], [[0, 1], [1, 1]])
+	assert allclose(im[:,:,1], [[0, 0], [0, 1]])
+	assert allclose(im[:,:,2], [[0, 0], [0, 1]])
 

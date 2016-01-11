@@ -371,7 +371,8 @@ class many(object):
     def outline(self, inner, outer):
         return self.updater('outline', inner, outer)
 
-    def mask(self, dims=None, base=None, fill='deeppink', stroke=None, background=None):
+    def mask(self, dims=None, base=None, fill='deeppink', stroke=None, background=None, 
+             cmap=None, value=None):
         """
         Create a mask image with colored regions.
 
@@ -394,10 +395,16 @@ class many(object):
 
         background : str or array-like, optional, default = None
             String color specifier, or RGB values.
+
+        cmap : str or colormap, optional, deafult = None
+            String specifier for colormap, or colormap.
+
+        value : array-like, optional, default = None
+            Value per region for use with colormap.
         """
         background = getcolor(background)
-        fill = getcolors(fill, self.count)
         stroke = getcolors(stroke, self.count)
+        fill = getcolors(fill, self.count, cmap, value)
 
         minbound = asarray([b[0:2] for b in self.bbox]).min(axis=0)
         maxbound = asarray([b[2:] for b in self.bbox]).max(axis=0)
@@ -411,8 +418,8 @@ class many(object):
         base = getbase(base=base, dims=dims, extent=extent, background=background)
 
         for i, r in enumerate(regions):
-            f = fill[i] if fill else None
-            s = stroke[i] if stroke else None
+            f = fill[i] if fill is not None else None
+            s = stroke[i] if stroke is not None else None
             base = r.mask(base=base, fill=f, stroke=s)
 
         return base
@@ -438,10 +445,17 @@ def getcolor(spec):
     else:
         return spec
 
-def getcolors(spec, n):
+def getcolors(spec, n, cmap=None, value=None):
     """
     Turn list of color specs into list of arrays.
     """
+    if cmap is not None:
+        from matplotlib.colors import LinearSegmentedColormap
+        from matplotlib.cm import get_cmap
+        if isinstance(cmap, LinearSegmentedColormap):
+            return cmap(value)[:, 0:3]
+        if isinstance(cmap, str):
+            return get_cmap(cmap, n)(value)[:, 0:3]
     if isinstance(spec, str):
         return [getcolor(spec) for i in range(n)]
     elif isinstance(spec, list) and isinstance(spec[0], str):
