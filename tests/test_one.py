@@ -116,6 +116,15 @@ def test_mask():
 	assert allclose(im, [[[1, 0, 0]]])
 
 
+def test_mask_no_fill():
+	coords = [[1, 1]]
+	r = one(coords)
+	im = r.mask(fill=None, stroke='black', dims=(2,2))
+	assert allclose(im[:,:,0], [[0, 0], [0, 1]])
+	assert allclose(im[:,:,1], [[0, 0], [0, 1]])
+	assert allclose(im[:,:,2], [[0, 0], [0, 1]])
+
+
 def test_mask_colors():
 	coords = [[1, 1]]
 	r = one(coords)
