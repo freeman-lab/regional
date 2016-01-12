@@ -246,9 +246,10 @@ class one(object):
 
         base = getbase(base=base, dims=dims, extent=self.extent, background=background)
 
-        for channel in range(3):
-            inds = asarray([[c[0], c[1], channel] for c in region.coordinates])
-            base[inds.T.tolist()] = fill[channel]
+        if fill is not None:
+            for channel in range(3):
+                inds = asarray([[c[0], c[1], channel] for c in region.coordinates])
+                base[inds.T.tolist()] = fill[channel]
 
         if stroke is not None:
             mn = [0, 0]
