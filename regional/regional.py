@@ -1,5 +1,5 @@
 from numpy import asarray, amin, amax, sqrt, concatenate, \
-    mean, ndarray, sum, all, ones, tile, expand_dims, zeros, where
+    mean, ndarray, sum, all, ones, tile, expand_dims, zeros, where, integer
 import checkist
 
 class one(object):
@@ -287,7 +287,7 @@ class many(object):
                             "or list of coordinates, got %s" % type(regions))
 
     def __getitem__(self, selection):
-        if isinstance(selection, int):
+        if isinstance(selection, int) or isinstance(selection, integer):
             return self.regions[selection]
         else:
             self.regions = self.regions[selection]

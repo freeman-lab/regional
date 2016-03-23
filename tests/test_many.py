@@ -1,4 +1,4 @@
-from numpy import allclose
+from numpy import allclose, int64
 from regional import one, many
 
 def test_construction():
@@ -12,6 +12,13 @@ def test_construction():
 	r = many([coords, coords, coords])
 	assert r.count == 3
 	assert allclose(r.coordinates, [coords, coords, coords])
+
+
+def test_index():
+	coords = [[0, 0], [0, 1], [1, 0], [1, 1]]
+	r = many([one(coords), one(coords)])
+	assert allclose(r[0].coordinates, coords)
+	assert allclose(r[int64(0)].coordinates, coords)
 
 
 def test_center():
