@@ -5,7 +5,7 @@
 
 > manipulation and display of spatial regions in python
 
-This package makes it easy to display spatial regions, and is useful when working with geometries, maps, feature extraction, or other spatial analysis. Designed to be small and light-weight, built on [`numpy`](https://github.com/numpy/numpy) and [`scipy`](https://github.com/scipy/scipy), and composes with other modules for image analysis and display.
+This package makes it easy to display spatial regions, and is useful when working with geometries, maps, feature extraction, or other spatial analyses. Designed to be small and light-weight, built on [`numpy`](https://github.com/numpy/numpy) and [`scipy`](https://github.com/scipy/scipy), and composes with other modules for image analysis and display.
 
 ### install
 
