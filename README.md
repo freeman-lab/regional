@@ -1,7 +1,7 @@
 # regional
 
-[![Latest Version](https://img.shields.io/pypi/v/regional.svg)](https://pypi.python.org/pypi/regional)
-[![Build Status](https://img.shields.io/travis/freeman-lab/regional/master.svg)](https://travis-ci.org/freeman-lab/regional) 
+[![Latest Version](https://img.shields.io/pypi/v/regional.svg?style=flat-square)](https://pypi.python.org/pypi/regional)
+[![Build Status](https://img.shields.io/travis/freeman-lab/regional/master.svg?style=flat-square)](https://travis-ci.org/freeman-lab/regional) 
 
 > manipulation and display of spatial regions in python
 
