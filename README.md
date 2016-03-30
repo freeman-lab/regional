@@ -29,7 +29,7 @@ see the included [notebook](example.ipynb) for a longer example
 
 ### usage
 
-####`region = one(coords)`
+#### `region = one(coords)`
 
 constructs a single region 
 
@@ -38,7 +38,7 @@ constructs a single region
 
 ![one](pngs/one.png)
 
-####`regions = many(list)`
+#### `regions = many(list)`
 
 - `list` : 
 	- list of regions `[region, region, ...]` or 
@@ -50,56 +50,56 @@ constructs a single region
 
 ### attributes
 
-####`region.hull`
+#### `region.hull`
 
 convex hull
 
-####`region.bbox`
+#### `region.bbox`
 
 rectangular bounding box
 
-####`region.center`
+#### `region.center`
 
 euclidean center
 
-####`region.extent`
+#### `region.extent`
 
 total region extent
 
 ### methods
 
-####`region.distance(other)`
+#### `region.distance(other)`
 
 distance to other region
 
-####`region.merge(other)`
+#### `region.merge(other)`
 
 merge with other region
 
-####`region.exclude(other)`
+#### `region.exclude(other)`
 
 exclude other region
 
-####`region.overlap(other, method)`
+#### `region.overlap(other, method)`
 
 compute overlap with other region
 
-####`region.crop(min, max)`
+#### `region.crop(min, max)`
 
 crop region to bounds
 
-####`region.inbounds(min, max)`
+#### `region.inbounds(min, max)`
 
 check whether region falls completely within bounds
 
-####`region.dilate(size)`
+#### `region.dilate(size)`
 
 dilate region 
 
-####`region.outline(inner, outer)`
+#### `region.outline(inner, outer)`
 
 compute region outline
 
-####`region.mask(dims, base, fill, stroke, background, value, cmap)`
+#### `region.mask(dims, base, fill, stroke, background, value, cmap)`
 
 generate image with regions as colored masks (`value` and `cmap` only for multiple regions)
