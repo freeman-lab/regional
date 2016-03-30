@@ -36,7 +36,7 @@ constructs a single region
 - `coords`
 	- list of coordinates `[[x, y], [x, y], ...]`
 
-![one](pngs/one.png)
+![many](https://s3.amazonaws.com/documentation-samples/regional/one.png)
 
 #### `regions = many(list)`
 
@@ -44,7 +44,7 @@ constructs a single region
 	- list of regions `[region, region, ...]` or 
 	- list of lists of coordinates `[[[x, y], [x, y], ...], [[x, y], [x, y], ...], ...]`
 
-![many](pngs/many.png)
+![many](https://s3.amazonaws.com/documentation-samples/regional/many.png)
 
 `one` region and `many` regions have the same [`attributes`](#attributes) and [`methods`](#methods), the only difference is that in the case of `many` regions they are just evaluated once per region
 
