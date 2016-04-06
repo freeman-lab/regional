@@ -9,7 +9,7 @@ This package makes it easy to display spatial regions, and is useful when workin
 
 ### install
 
-```
+```bash
 pip install regional
 ```
 
