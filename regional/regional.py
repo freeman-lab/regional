@@ -1,4 +1,4 @@
-from numpy import asarray, amin, amax, sqrt, concatenate, \
+from numpy import asarray, amin, amax, sqrt, concatenate, arange, \
     mean, ndarray, sum, all, ones, tile, expand_dims, zeros, where, integer
 import checkist
 
@@ -402,7 +402,11 @@ class many(object):
 
         value : array-like, optional, default = None
             Value per region for use with colormap.
+            If None and cmap is specified, will use the range
+            from 0 to the number of regions.
         """
+        if cmap is not None and value is None:
+            value = arange(self.count)
         background = getcolor(background)
         stroke = getcolors(stroke, self.count)
         fill = getcolors(fill, self.count, cmap, value)
