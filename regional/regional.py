@@ -212,7 +212,7 @@ class one(object):
         """
         return self.dilate(outer).exclude(self.dilate(inner))
 
-    def mask(self, dims=None, base=None, fill='deeppink', stroke=None, background=None):
+    def mask(self, dims=None, base=None, fill='deeppink', stroke='black', background=None):
         """
         Create a mask image with colored regions.
 
@@ -372,8 +372,8 @@ class many(object):
     def outline(self, inner, outer):
         return self.updater('outline', inner, outer)
 
-    def mask(self, dims=None, base=None, fill='deeppink', stroke=None, background=None, 
-             cmap=None, value=None):
+    def mask(self, dims=None, base=None, fill='deeppink', stroke='black', background=None, 
+             cmap=None, cmap_stroke=None, value=None):
         """
         Create a mask image with colored regions.
 
@@ -398,7 +398,12 @@ class many(object):
             String color specifier, or RGB values.
 
         cmap : str or colormap, optional, deafult = None
-            String specifier for colormap, or colormap.
+            String specifier for colormap, or colormap. Will control
+            both fill and stroke. Use cmap_stroke to
+            set stroke independently.
+
+        cmap_stroke : str or colormap, optional, deafult = None
+            String specifier for colormap, or colormap, for stroke only.
 
         value : array-like, optional, default = None
             Value per region for use with colormap.
@@ -408,7 +413,7 @@ class many(object):
         if cmap is not None and value is None:
             value = arange(self.count)
         background = getcolor(background)
-        stroke = getcolors(stroke, self.count)
+        stroke = getcolors(stroke, self.count, cmap_stroke, value)
         fill = getcolors(fill, self.count, cmap, value)
 
         minbound = asarray([b[0:2] for b in self.bbox]).min(axis=0)
@@ -454,7 +459,7 @@ def getcolors(spec, n, cmap=None, value=None):
     """
     Turn list of color specs into list of arrays.
     """
-    if cmap is not None:
+    if cmap is not None and spec is not None:
         from matplotlib.colors import LinearSegmentedColormap
         from matplotlib.cm import get_cmap
         if isinstance(cmap, LinearSegmentedColormap):
