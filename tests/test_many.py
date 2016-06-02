@@ -107,11 +107,11 @@ def test_outline():
 
 def test_mask():
 	r = many([one([0, 0]), one([1, 1])])
-	im = r.mask(fill='red')
+	im = r.mask(fill='red', stroke=None)
 	assert allclose(im[:,:,0], [[1, 1], [1, 1]])
 	assert allclose(im[:,:,1], [[0, 1], [1, 0]])
 	assert allclose(im[:,:,2], [[0, 1], [1, 0]])
-	im = r.mask(fill=[1, 0, 0])
+	im = r.mask(fill=[1, 0, 0], stroke=None)
 	assert allclose(im[:,:,0], [[1, 1], [1, 1]])
 	assert allclose(im[:,:,1], [[0, 1], [1, 0]])
 	assert allclose(im[:,:,2], [[0, 1], [1, 0]])
@@ -119,11 +119,11 @@ def test_mask():
 
 def test_mask_background():
 	r = many([one([0, 0]), one([1, 1])])
-	im = r.mask(fill='red', background='black')
+	im = r.mask(fill='red', stroke=None, background='black')
 	assert allclose(im[:,:,0], [[1, 0], [0, 1]])
 	assert allclose(im[:,:,1], [[0, 0], [0, 0]])
 	assert allclose(im[:,:,2], [[0, 0], [0, 0]])
-	im = r.mask(fill=[1, 0, 0], background='black')
+	im = r.mask(fill=[1, 0, 0], stroke=None, background='black')
 	assert allclose(im[:,:,0], [[1, 0], [0, 1]])
 	assert allclose(im[:,:,1], [[0, 0], [0, 0]])
 	assert allclose(im[:,:,2], [[0, 0], [0, 0]])
@@ -131,11 +131,11 @@ def test_mask_background():
 
 def test_mask_colors():
 	r = many([one([0, 0]), one([1, 1])])
-	im = r.mask(fill=['red','blue'], background='black')
+	im = r.mask(fill=['red','blue'], stroke=None, background='black')
 	assert allclose(im[:,:,0], [[1, 0], [0, 0]])
 	assert allclose(im[:,:,1], [[0, 0], [0, 0]])
 	assert allclose(im[:,:,2], [[0, 0], [0, 1]])
-	im = r.mask(fill=[[1, 0, 0], [0, 0, 1]], background='black')
+	im = r.mask(fill=[[1, 0, 0], [0, 0, 1]], stroke=None, background='black')
 	assert allclose(im[:,:,0], [[1, 0], [0, 0]])
 	assert allclose(im[:,:,1], [[0, 0], [0, 0]])
 	assert allclose(im[:,:,2], [[0, 0], [0, 1]])
@@ -143,7 +143,7 @@ def test_mask_colors():
 
 def test_mask_colormap():
 	r = many([one([0, 0]), one([1, 1])])
-	im = r.mask(cmap='gray', value=[0, 1], background='red')
+	im = r.mask(cmap='gray', stroke=None, value=[0, 1], background='red')
 	assert allclose(im[:,:,0], [[0, 1], [1, 1]])
 	assert allclose(im[:,:,1], [[0, 0], [0, 1]])
 	assert allclose(im[:,:,2], [[0, 0], [0, 1]])
