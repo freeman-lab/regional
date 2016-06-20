@@ -459,12 +459,6 @@ def getcolors(spec, n, cmap=None, value=None):
     """
     Turn list of color specs into list of arrays.
     """
-    print('n')
-    print(n)
-    print('cmap')
-    print(cmap)
-    print('value')
-    print(value)
     if cmap is not None and spec is not None:
         from matplotlib.colors import LinearSegmentedColormap
         from matplotlib.cm import get_cmap
