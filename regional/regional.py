@@ -410,7 +410,7 @@ class many(object):
             If None and cmap is specified, will use the range
             from 0 to the number of regions.
         """
-        if cmap is not None and value is None:
+        if (cmap is not None or cmap_stroke is not None) and value is None:
             value = arange(self.count)
         background = getcolor(background)
         stroke = getcolors(stroke, self.count, cmap_stroke, value)
@@ -459,6 +459,12 @@ def getcolors(spec, n, cmap=None, value=None):
     """
     Turn list of color specs into list of arrays.
     """
+    print('n')
+    print(n)
+    print('cmap')
+    print(cmap)
+    print('value')
+    print(value)
     if cmap is not None and spec is not None:
         from matplotlib.colors import LinearSegmentedColormap
         from matplotlib.cm import get_cmap
