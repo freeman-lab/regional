@@ -63,7 +63,8 @@ def test_merge():
 	coords = [[0, 0], [0, 2], [2, 0], [2, 2]]
 	truth = coords + [[1,1]]
 	r = many([coords, coords]).merge([1, 1])
-	assert allclose(r.coordinates, [truth, truth])
+	assert equal_sets(r.coordinates[0], truth)
+	assert equal_sets(r.coordinates[1], truth)
 
 
 def test_crop():
@@ -148,3 +149,8 @@ def test_mask_colormap():
 	assert allclose(im[:,:,1], [[0, 0], [0, 1]])
 	assert allclose(im[:,:,2], [[0, 0], [0, 1]])
 
+
+def equal_sets(a, b):
+	aset = set([tuple(x) for x in a])
+	bset = set([tuple(x) for x in b])
+	return aset == bset

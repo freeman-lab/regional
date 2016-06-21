@@ -78,7 +78,9 @@ class one(object):
         if not isinstance(other, one):
             other = one(other)
         new = concatenate((self.coordinates, other.coordinates))
-        return one(new)
+        unique = set([tuple(x) for x in new.tolist()])
+        final = asarray([list(x) for x in unique])
+        return one(final)
 
     def crop(self, min, max):
         """

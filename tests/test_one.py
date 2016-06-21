@@ -49,9 +49,17 @@ def test_distance():
 def test_merge():
 	coords = [[0, 0], [0, 2], [2, 0], [2, 2]]
 	r = one(coords).merge([1, 1])
-	assert allclose(r.coordinates, coords + [[1,1]])
+	assert equal_sets(r.coordinates.tolist(), coords + [[1, 1]]) 
 	r = one(coords).merge(one([1, 1]))
-	assert allclose(r.coordinates, coords + [[1,1]])
+	assert equal_sets(r.coordinates.tolist(), coords + [[1, 1]]) 
+
+
+def test_merge_nonunique():
+	coords = [[0, 0], [0, 2], [2, 0], [2, 2]]
+	r = one(coords).merge([[1, 1], [0, 0]])
+	assert equal_sets(r.coordinates.tolist(), coords + [[1,1]])
+	r = one(coords).merge(one([[1, 1], [0, 0]]))
+	assert equal_sets(r.coordinates.tolist(), coords + [[1,1]])
 
 
 def test_crop():
@@ -143,3 +151,9 @@ def test_mask_colors():
 	assert allclose(im[:, :, 0], [[0, 0], [0, 1]])
 	assert allclose(im[:, :, 1], [[0, 0], [0, 0]])
 	assert allclose(im[:, :, 2], [[1, 1], [1, 0]])
+
+
+def equal_sets(a, b):
+	aset = set([tuple(x) for x in a])
+	bset = set([tuple(x) for x in b])
+	return aset == bset
