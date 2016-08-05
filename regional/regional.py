@@ -1,6 +1,5 @@
 from numpy import asarray, amin, amax, sqrt, concatenate, arange, \
     mean, ndarray, sum, all, ones, tile, expand_dims, zeros, where, integer
-import checkist
 
 class one(object):
     
@@ -133,7 +132,7 @@ class one(object):
             Which estimate of overlap to compute, options are
             'fraction' (symmetric) or 'rates' (asymmetric)
         """
-        checkist.opts(method, ['fraction', 'rates'])
+        checkopts(method, ['fraction', 'rates'])
 
         coords_self = self.coordinates.tolist()
         coords_other = other.coordinates.tolist()
@@ -494,3 +493,7 @@ def getbase(base=None, dims=None, extent=None, background=None):
         return tile(expand_dims(base, 2),[1, 1, 3])
     else:
         return base
+
+def checkopts(opt, valid):
+    if not opt in valid:
+        raise ValueError("Option must be one of %s, got '%s'" % (str(valid)[1:-1], opt))
